@@ -48,13 +48,15 @@ const schemaQueries = [
   `CREATE INDEX idx_snapshots_board_id ON snapshots (board_id)`
 ];
 
-try {
-  for (const query of schemaQueries) {
-    await db.query(query);
+const createSchema = async () => {
+  try {
+    for (const query of schemaQueries) {
+      await db.query(query);
+    }
+  } catch (err) {
+    console.error('Schema creation failed:', err);
+    throw err;
   }
-} catch (err) {
-  console.error('Schema creation failed:', err);
-  throw err;
-} finally {
-  await db.end();
-}
+};
+
+export default createSchema;
