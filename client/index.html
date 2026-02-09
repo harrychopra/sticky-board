@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StickyBoard</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
     <header>
@@ -26,12 +26,13 @@
             <input
               type="text"
               id="boardName"
+              name="boardName"
               placeholder="eg. Sprint planning"
               autocomplete="off" />
           </div>
           <div>
             <label for="template">Template</label>
-            <select id="id">
+            <select id="template" name="template">
               <option value="blank">Blank</option>
               <option value="retro">Retro</option>
               <option value="brainstorm">Brainstorm</option>
@@ -44,5 +45,6 @@
         </form>
       </div>
     </main>
+    <script src="./js/app.js" type="module"></script>
   </body>
 </html>
