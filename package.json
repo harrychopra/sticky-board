@@ -3,11 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "pg": "^8.18.0"
+  },
+  "scripts": {
+    "db:create": "docker exec -i pg14 psql -U root < ./db/migration/create-dbs.sql",
+    "db:create-schema-dev": "node ./db/migration/create-schema.js",
+    "db:create-schema-prod": "NODE_ENV=production ./db/migration/create-schema.js"
+  }
 }
