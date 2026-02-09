@@ -26,6 +26,6 @@ export const createBoard = async (req, res) => {
 
 export const deleteBoard = async (req, res) => {
   const deleted = await Board.deleteById(req.params.id);
-  if (!deleted) return res.status(404).json({ error: 'Board not found.' });
+  if (!deleted) return res.status(404).json({ error: 'Board not found' });
   res.status(204).send();
 };

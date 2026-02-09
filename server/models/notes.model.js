@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import db from '../db/db.js';
 
 class Note {
@@ -21,6 +22,56 @@ class Note {
       id
     ]);
     return rows.map(row => new Note(row));
+  }
+
+  static async findById(id) {
+    const { rows } = await db.query(`select * from notes where id = $1`, [id]);
+    return rows.length === 1 ? new Note(rows[0]) : null;
+  }
+
+  static async create(
+    {
+      board_id,
+      contents = '',
+      colour = '#FFEB3B',
+      pos_x = 100,
+      pos_y = 100,
+      width = 200,
+      height = 200,
+      author = 'Anonymous',
+      tags = []
+    }
+  ) {
+    const id = uuid();
+    const { rows } = await db.query(
+      `--sql
+      insert into notes (
+        id, board_id, contents, colour, pos_x, pos_y, width, height, author, tags
+      ) values (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+      ) returning *
+    `,
+      [
+        id,
+        board_id,
+        contents,
+        colour,
+        pos_x,
+        pos_y,
+        width,
+        height,
+        author,
+        tags
+      ]
+    );
+    return rows.length === 1 ? new Note(rows[0]) : null;
+  }
+
+  static async deleteById(id) {
+    const { rowCount } = await db.query(`DELETE FROM notes WHERE id = $1`, [
+      id
+    ]);
+    return rowCount > 0;
   }
 
   serialize() {

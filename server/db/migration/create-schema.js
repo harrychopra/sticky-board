@@ -30,7 +30,7 @@ const schemaQueries = [
       width int NOT NULL DEFAULT 200,
       height int NOT NULL DEFAULT 200,
       author text NOT NULL DEFAULT 'Anonymous',
-      tags text NOT NULL DEFAULT '[]',
+      tags text[] NOT NULL DEFAULT '{}',
       created_at timestamp DEFAULT current_timestamp,
       updated_at timestamp DEFAULT current_timestamp
     )`,

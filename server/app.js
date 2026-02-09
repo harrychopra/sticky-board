@@ -2,7 +2,8 @@ import cors from 'cors';
 import express from 'express';
 
 import {
-  boardRouter
+  boardRouter,
+  noteRouter
 } from './routes/index.routes.js';
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/boards', boardRouter);
+app.use('/api/notes', noteRouter);
 
 app.use((err, req, res, next) => {
   console.error('Error:', {
