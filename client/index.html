@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StickyBoard</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">StickyBoard</div>
+    </header>
+    <main>
+      <div class="hero">
+        <h1>A board for every <br />idea, sprint and retro.</h1>
+        <p>
+          Create a board, share the link, and collaborate in real time (no
+          account needed).
+        </p>
+      </div>
+      <div class="forms">
+        <h2>Create a board</h2>
+        <form id="createForm">
+          <div>
+            <label for="boardName">Board name</label>
+            <input
+              type="text"
+              id="boardName"
+              placeholder="eg. Sprint planning"
+              autocomplete="off" />
+          </div>
+          <div>
+            <label for="template">Template</label>
+            <select id="id">
+              <option value="blank">Blank</option>
+              <option value="retro">Retro</option>
+              <option value="brainstorm">Brainstorm</option>
+              <option value="kanban">kanban</option>
+            </select>
+          </div>
+          <div>
+            <button type="submit">Create board</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>

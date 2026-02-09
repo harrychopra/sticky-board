@@ -1,0 +1,74 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  /* background-color: gray; */
+}
+
+header {
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid darkslategray;
+}
+
+.logo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  padding: 4rem 2rem;
+}
+
+.hero p {
+  width: 420px;
+  margin-top: 1rem;
+  line-height: 1.6;
+}
+
+.forms {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.forms h2 {
+  margin-bottom: 1.25rem;
+}
+
+.forms div {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.forms label {
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.02rem;
+}
+
+.forms input,
+.forms select,
+.forms button {
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+}
+
+.forms button {
+  padding-inline: 1.5rem;
+  font-weight: 500;
+  color: #444;
+  margin-top: 0.8rem;
+  align-self: center;
+}
