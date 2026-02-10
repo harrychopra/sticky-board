@@ -5,7 +5,7 @@ class Note {
   constructor(row) {
     this.id = row.id;
     this.board_id = row.board_id;
-    this.contents = row.contents;
+    this.text = row.text;
     this.colour = row.colour;
     this.pos_x = row.pos_x;
     this.pos_y = row.pos_y;
@@ -32,7 +32,7 @@ class Note {
   static async create(
     {
       board_id,
-      contents = '',
+      text = '',
       colour = '#FFEB3B',
       pos_x = 100,
       pos_y = 100,
@@ -46,7 +46,7 @@ class Note {
     const { rows } = await db.query(
       `--sql
       insert into notes (
-        id, board_id, contents, colour, pos_x, pos_y, width, height, author, tags
+        id, board_id, text, colour, pos_x, pos_y, width, height, author, tags
       ) values (
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
       ) returning *
@@ -54,7 +54,7 @@ class Note {
       [
         id,
         board_id,
-        contents,
+        text,
         colour,
         pos_x,
         pos_y,

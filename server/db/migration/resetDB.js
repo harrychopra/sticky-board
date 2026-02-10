@@ -21,7 +21,7 @@ const schemaQueries = [
   `CREATE TABLE IF NOT EXISTS notes (
       id text PRIMARY KEY,
       board_id text NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
-      contents text NOT NULL DEFAULT '',
+      text text NOT NULL DEFAULT '',
       colour text NOT NULL DEFAULT '#FFEB3B',
       pos_x int NOT NULL DEFAULT 100,
       pos_y int NOT NULL DEFAULT 100,

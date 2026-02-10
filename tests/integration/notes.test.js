@@ -22,14 +22,14 @@ describe('Notes API', () => {
       .post('/api/notes')
       .send({
         board_id: boardId,
-        contents: 'Hello world',
+        text: 'Hello world',
         colour: '#FFEB3B',
         author: 'Harry',
         tags: ['#idea']
       });
 
     expect(res.status).toBe(201);
-    expect(res.body.contents).toBe('Hello world');
+    expect(res.body.text).toBe('Hello world');
     expect(res.body.tags).toEqual(['#idea']);
     noteId = res.body.id;
   });
