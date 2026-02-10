@@ -1,21 +1,29 @@
+import { logError, showToast } from './utils.js';
+
 const params = new URLSearchParams(window.location.search);
 const boardId = params.get('id');
 if (!boardId) window.location.href = '/';
 
-const boardTitle = document.getElementById('boardTitle');
 const canvas = document.getElementById('boardCanvas');
 
 async function loadBoard() {
-  const res = await fetch(`/api/boards/${boardId}`);
-  if (!res.ok) {
-    boardTitle.textContent = 'Board not found';
-    return null;
-  }
+  const [method, url, ctx] = ['GET', `/api/boards/${boardId}`, 'loading board'];
 
-  const board = await res.json();
-  boardTitle.textContent = board.name;
-  document.title = `${board.name} - StickyBoard`;
-  return board;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      logError(ctx, `${method} ${url} failed with status ${res.status}`);
+      showToast('Board not found', true);
+      return null;
+    }
+    const board = await res.json();
+    document.getElementById('boardTitle').textContent = board.name;
+    document.title = `${board.name} - StickyBoard`;
+    return board;
+  } catch (err) {
+    logError(ctx, err);
+    showToast('Could not reach the server', true);
+  }
 }
 
 function renderNote(note) {
@@ -36,25 +44,32 @@ function renderNote(note) {
 
 function setupAddNoteBtn() {
   const addNoteBtn = document.getElementById('addNoteBtn');
+  const [method, url, ctx] = ['POST', '/api/notes', 'adding note'];
 
   addNoteBtn.addEventListener('click', async () => {
-    const res = await fetch('/api/notes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        board_id: boardId,
-        pos_x: 80 + parseInt(Math.random() * 200),
-        pos_y: 80 + parseInt(Math.random() * 200)
-      })
-    });
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          board_id: boardId,
+          pos_x: 80 + parseInt(Math.random() * 200),
+          pos_y: 80 + parseInt(Math.random() * 200)
+        })
+      });
 
-    if (!res.ok) {
-      console.error('POST /api/notes, status:', res.status);
-      return;
+      if (!res.ok) {
+        logError(ctx, `${method} ${url} failed with status ${res.status}`);
+        showToast('Could not add note', true);
+        return;
+      }
+
+      const note = await res.json();
+      renderNote(note);
+    } catch (err) {
+      logError(ctx, err);
+      showToast('Could not reach the server', true);
     }
-
-    const note = await res.json();
-    renderNote(note);
   });
 }
 
