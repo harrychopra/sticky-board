@@ -76,6 +76,7 @@ function setupAddNoteBtn() {
 async function init() {
   const board = await loadBoard();
   if (!board) return;
+  board.notes.forEach(note => renderNote(note));
   setupAddNoteBtn();
 }
 
