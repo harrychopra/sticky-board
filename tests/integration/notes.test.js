@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../../server/app.js';
 import db from '../../server/db/db.js';
-import createSchema from '../../server/db/migration/create-schema.js';
+import resetDB from '../../server/db/migration/resetDB.js';
 
 afterAll(() => db.end());
 
@@ -10,7 +10,7 @@ describe('Notes API', () => {
   let noteId;
 
   beforeAll(async () => {
-    await createSchema();
+    await resetDB(db);
     const res = await request(app).post('/api/boards').send({
       name: 'Notes Test Board'
     });

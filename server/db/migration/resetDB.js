@@ -1,5 +1,3 @@
-import db from '../db.js';
-
 const schemaQueries = [
   `DROP INDEX IF EXISTS idx_snapshots_board_id`,
 
@@ -48,7 +46,7 @@ const schemaQueries = [
   `CREATE INDEX idx_snapshots_board_id ON snapshots (board_id)`
 ];
 
-const createSchema = async () => {
+const resetDB = async db => {
   try {
     for (const query of schemaQueries) {
       await db.query(query);
@@ -59,4 +57,4 @@ const createSchema = async () => {
   }
 };
 
-export default createSchema;
+export default resetDB;

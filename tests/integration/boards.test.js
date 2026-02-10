@@ -1,9 +1,9 @@
 import request from 'supertest';
 import app from '../../server/app.js';
 import db from '../../server/db/db.js';
-import createSchema from '../../server/db/migration/create-schema.js';
+import resetDB from '../../server/db/migration/resetDB.js';
 
-beforeAll(() => createSchema());
+beforeAll(() => resetDB(db));
 afterAll(() => db.end());
 
 describe('Boards API', () => {

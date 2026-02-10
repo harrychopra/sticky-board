@@ -22,9 +22,10 @@
     "supertest": "^7.2.2"
   },
   "scripts": {
-    "db:create": "docker exec -i pg14 psql -U root < ./db/migration/create-dbs.sql",
-    "db:create-schema-dev": "node ./db/migration/create-schema.js",
-    "db:create-schema-prod": "NODE_ENV=production ./db/migration/create-schema.js",
+    "db:create": "docker exec -i pg14 psql -U root < ./server/db/migration/create-dbs.sql",
+    "db:reset": "node ./server/db/scripts/resetDB.js",
+    "db:reset:test": "NODE_ENV=test node ./server/db/scripts/resetDB.js",
+    "db:reset:prod": "NODE_ENV=production node ./server/db/scripts/resetDB.js",
     "dev": "nodemon ./server/server.js",
     "test": "NODE_OPTIONS='--no-warnings --experimental-vm-modules' jest"
   }
