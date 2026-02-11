@@ -98,6 +98,36 @@ function makeDraggable(noteEl) {
   });
 }
 
+function setupNoteEditing(noteEl) {
+  const textarea = noteEl.querySelector('.note-body');
+  textarea.addEventListener('blur', async () => {
+    const id = noteEl.dataset.id;
+    const text = textarea.value;
+
+    const [method, url, ctx] = [
+      'PATCH',
+      `/api/notes/${id}`,
+      'saving note text'
+    ];
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+
+      if (!res.ok) {
+        logError(ctx, `${method} ${url} failed with status ${res.status}`);
+        showToast('Could not save note text', true);
+      }
+    } catch (err) {
+      logError(ctx, err);
+      showToast('Could not reach the server', true);
+    }
+  });
+}
+
 function renderNote({ id, pos_x, pos_y, colour, author, text }) {
   const noteEl = document.createElement('div');
   noteEl.className = 'note';
@@ -112,6 +142,7 @@ function renderNote({ id, pos_x, pos_y, colour, author, text }) {
   `;
 
   makeDraggable(noteEl);
+  setupNoteEditing(noteEl);
   canvas.appendChild(noteEl);
 }
 
@@ -149,8 +180,11 @@ function setupAddNoteBtn() {
 async function init() {
   const board = await loadBoard();
   if (!board) return;
+
   board.notes.forEach(note => renderNote(note));
   setupAddNoteBtn();
 }
 
 init();
+
+// TODO : z-index preserve
