@@ -26,6 +26,30 @@ async function loadBoard() {
   }
 }
 
+async function saveNotePosition(id, pos_x, pos_y) {
+  const [method, url, ctx] = [
+    'PATCH',
+    `/api/notes/${id}`,
+    'saving note position'
+  ];
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pos_x, pos_y })
+    });
+
+    if (!res.ok) {
+      logError(ctx, `${method} ${url} failed with status ${res.status}`);
+      showToast('Could not save note position', true);
+    }
+  } catch (err) {
+    logError(ctx, err);
+    showToast('Could not reach the server', true);
+  }
+}
+
 const getTopZ = (() => {
   let topZ = 0;
   return (() => ++topZ);
@@ -62,8 +86,15 @@ function makeDraggable(noteEl) {
     noteEl.style.top = (startTop + (clientY - startY)) + 'px';
   });
 
-  document.addEventListener('mouseup', () => {
+  document.addEventListener('mouseup', async e => {
+    if (!dragging) return;
     dragging = false;
+
+    const id = noteEl.dataset.id;
+    const pos_x = parseInt(noteEl.style.left);
+    const pos_y = parseInt(noteEl.style.top);
+
+    await saveNotePosition(id, pos_x, pos_y);
   });
 }
 
