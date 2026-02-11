@@ -26,20 +26,62 @@ async function loadBoard() {
   }
 }
 
-function renderNote(note) {
-  const el = document.createElement('div');
-  el.className = 'note';
-  el.dataset.id = note.id;
-  el.style.left = note.pos_x + 'px';
-  el.style.top = note.pos_y + 'px';
-  el.style.backgroundColor = note.colour;
+const getTopZ = (() => {
+  let topZ = 0;
+  return (() => ++topZ);
+})();
 
-  el.innerHTML = `
-    <div class="note-author">${note.author}</div>
-    <textarea class="note-body" placeholder="Type something...">${note.text}</textarea>
+function makeDraggable(noteEl) {
+  let dragging = false;
+  let startX, startY, startLeft, startTop;
+
+  noteEl.addEventListener('mousedown', e => {
+    // bring the note to foreground
+    noteEl.style.zIndex = getTopZ();
+
+    // for dragging, ignore any click inside the text area
+    if (e.target.tagName === 'TEXTAREA') return;
+
+    dragging = true;
+
+    // where the mouse is on screen when clicked
+    startX = e.clientX;
+    startY = e.clientY;
+
+    // where is note is on canvas when clicked
+    startLeft = parseInt(noteEl.style.left);
+    startTop = parseInt(noteEl.style.top);
+  });
+
+  document.addEventListener('mousemove', ({ clientX, clientY }) => {
+    // ignore the mouse movements if no mouse down
+    if (!dragging) return;
+
+    // add to note's original coordinates, distance the mouse has traveled
+    noteEl.style.left = (startLeft + (clientX - startX)) + 'px';
+    noteEl.style.top = (startTop + (clientY - startY)) + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    dragging = false;
+  });
+}
+
+function renderNote({ id, pos_x, pos_y, colour, author, text }) {
+  const noteEl = document.createElement('div');
+  noteEl.className = 'note';
+  noteEl.dataset.id = id;
+  noteEl.style.left = pos_x + 'px';
+  noteEl.style.top = pos_y + 'px';
+  noteEl.style.backgroundColor = colour;
+
+  noteEl.innerHTML = `
+    <div class="note-author">${author}</div>
+    <textarea class="note-body" placeholder="Type something...">${text}</textarea>
   `;
 
-  canvas.appendChild(el);
+  makeDraggable(noteEl);
+  canvas.appendChild(noteEl);
 }
 
 function setupAddNoteBtn() {

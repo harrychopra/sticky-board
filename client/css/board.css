@@ -43,11 +43,13 @@
   flex-direction: column;
   gap: 0.5rem;
   box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.15);
+  cursor: grab;
 }
 
 .note-author {
   font-size: 0.7rem;
   color: rgba(0, 0, 0, 0.45);
+  user-select: none;
 }
 
 .note-body {
