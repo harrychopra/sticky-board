@@ -74,6 +74,40 @@ class Note {
     return rowCount > 0;
   }
 
+  async update(fields) {
+    const allowedFields = [
+      'text',
+      'color',
+      'pos_x',
+      'pos_y',
+      'width',
+      'height',
+      'tags'
+    ];
+    const fieldsToUpdate = {};
+
+    for (const key of allowedFields) {
+      if (fields[key] !== undefined) {
+        fieldsToUpdate[key] = fields[key];
+      }
+    }
+
+    const placeholders = [];
+    const values = Object.entries(fieldsToUpdate).map(([key, val], i) => {
+      placeholders.push(`${key} = $${i + 1}`);
+      return val;
+    });
+
+    const query = `update notes set ${placeholders.join(', ')} where id = $${
+      placeholders.length + 1
+    } returning *`;
+
+    values.push(this.id);
+
+    const { rows } = await db.query(query, values);
+    return rows.length === 1 ? new Note(rows[0]) : null;
+  }
+
   serialize() {
     return this;
   }

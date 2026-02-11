@@ -15,3 +15,11 @@ export const deleteNote = async (req, res) => {
   if (!deleted) return res.status(404).json({ error: 'Note not found' });
   res.status(204).send();
 };
+
+export const updateNote = async (req, res) => {
+  const note = await Note.findById(req.params.id);
+  if (!note) return res.status(404).json({ error: 'Note not found' });
+
+  const updated = await note.update(req.body);
+  res.json(updated.serialize());
+};
