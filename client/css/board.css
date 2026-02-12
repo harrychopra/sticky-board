@@ -38,18 +38,18 @@
   position: absolute;
   width: 200px;
   height: 200px;
-  padding: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.15);
-  cursor: grab;
 }
 
 .note-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0.7rem 0.7rem 0 0.7rem;
+  cursor: grab;
 }
 
 .note-author {
@@ -76,13 +76,14 @@
   /* textarea to take the rest of the space */
   flex: 1;
   /* override textarea's default styling  */
+  padding: 0 0.7rem 0.7rem 0.7rem;
   background: none;
   border: none;
   resize: none;
   font-size: 0.85rem;
   line-height: 1.5;
   cursor: text;
-  width: 100%;
+  /* width: 100%; */
 }
 
 .note-body:focus {

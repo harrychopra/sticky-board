@@ -35,7 +35,8 @@ function makeDraggable(noteEl) {
     noteEl.style.zIndex = getTopZ();
 
     // for dragging, ignore any click inside the text area
-    if (e.target.tagName === 'TEXTAREA') return;
+    const tag = e.target.tagName;
+    if (tag === 'TEXTAREA' || tag === 'BUTTON') return;
 
     dragging = true;
 
@@ -52,14 +53,17 @@ function makeDraggable(noteEl) {
     // ignore the mouse movements if no mouse down
     if (!dragging) return;
 
-    // add to note's original coordinates, distance the mouse has traveled
+    // add distance the mouse has traveled to note's original coordinates,
     noteEl.style.left = (startLeft + (clientX - startX)) + 'px';
     noteEl.style.top = (startTop + (clientY - startY)) + 'px';
   });
 
-  document.addEventListener('mouseup', async e => {
+  document.addEventListener('mouseup', async ({ clientX, clientY }) => {
     if (!dragging) return;
     dragging = false;
+
+    // If the mouse hasn't traveled, skip re-saving the note position
+    if (startX === clientX && startY === clientY) return;
 
     const id = noteEl.dataset.id;
     const pos_x = parseInt(noteEl.style.left);
