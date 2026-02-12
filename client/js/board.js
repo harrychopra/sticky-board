@@ -128,6 +128,37 @@ function setupNoteEditing(noteEl) {
   });
 }
 
+function setupNoteDelete(noteEl) {
+  const deleteBtn = noteEl.querySelector('.note-delete');
+
+  deleteBtn.addEventListener('click', async () => {
+    const id = noteEl.dataset.id;
+    console.log(id);
+    const [method, url, ctx] = [
+      'DELETE',
+      `/api/notes/${id}`,
+      'deleting note'
+    ];
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (!res.ok) {
+        logError(ctx, `${method} ${url} failed with status ${res.status}`);
+        showToast('Could not delete note', true);
+      }
+
+      noteEl.remove();
+    } catch (err) {
+      logError(ctx, err);
+      showToast('Could not reach the server', true);
+    }
+  });
+}
+
 function renderNote({ id, pos_x, pos_y, colour, author, text }) {
   const noteEl = document.createElement('div');
   noteEl.className = 'note';
@@ -137,12 +168,16 @@ function renderNote({ id, pos_x, pos_y, colour, author, text }) {
   noteEl.style.backgroundColor = colour;
 
   noteEl.innerHTML = `
-    <div class="note-author">${author}</div>
+    <div class="note-header">
+      <div class="note-author">${author}</div>
+      <button class="note-delete">×</button>
+    </div>
     <textarea class="note-body" placeholder="Type something...">${text}</textarea>
   `;
 
   makeDraggable(noteEl);
   setupNoteEditing(noteEl);
+  setupNoteDelete(noteEl);
   canvas.appendChild(noteEl);
 }
 

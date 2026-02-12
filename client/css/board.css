@@ -46,10 +46,30 @@
   cursor: grab;
 }
 
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .note-author {
   font-size: 0.7rem;
   color: rgba(0, 0, 0, 0.45);
   user-select: none;
+}
+
+.note-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: rgba(0, 0, 0, 0.35);
+  line-height: 1rem;
+}
+
+.note-delete:hover {
+  color: red;
+  font-size: 1.2rem;
 }
 
 .note-body {
