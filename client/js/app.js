@@ -1,4 +1,5 @@
-import { logError, showToast } from './utils.js';
+import { requestAPI } from './api.js';
+import { showToast } from './utils.js';
 
 const createForm = document.getElementById('createForm');
 
@@ -13,25 +14,15 @@ createForm.addEventListener('submit', async e => {
     return;
   }
 
-  const [method, url, ctx] = ['POST', `/api/boards`, 'creating board'];
+  const req = {
+    method: 'POST',
+    url: `/api/boards`,
+    payload: { name, template },
+    ctx: 'create board'
+  };
 
-  try {
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, template })
-    });
+  const [board, err] = await requestAPI(req);
+  if (err !== null) return;
 
-    if (!res.ok) {
-      logError(ctx, `${method} ${url} failed with status ${res.status}`);
-      showToast('Could not create board', true);
-      return;
-    }
-
-    const board = await res.json();
-    window.location.href = `/board.html?id=${board.id}`;
-  } catch (err) {
-    logError(ctx, err);
-    showToast('Could not reach the server', true);
-  }
+  window.location.href = `/board.html?id=${board.id}`;
 });

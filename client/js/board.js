@@ -1,4 +1,4 @@
-import { logError, showToast } from './utils.js';
+import { requestAPI } from './api.js';
 
 const params = new URLSearchParams(window.location.search);
 const boardId = params.get('id');
@@ -7,47 +7,18 @@ if (!boardId) window.location.href = '/';
 const canvas = document.getElementById('boardCanvas');
 
 async function loadBoard() {
-  const [method, url, ctx] = ['GET', `/api/boards/${boardId}`, 'loading board'];
+  const req = {
+    method: 'GET',
+    url: `/api/boards/${boardId}`,
+    ctx: 'load board'
+  };
 
-  try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      logError(ctx, `${method} ${url} failed with status ${res.status}`);
-      showToast('Board not found', true);
-      return null;
-    }
-    const board = await res.json();
-    document.getElementById('boardTitle').textContent = board.name;
-    document.title = `${board.name} - StickyBoard`;
-    return board;
-  } catch (err) {
-    logError(ctx, err);
-    showToast('Could not reach the server', true);
-  }
-}
+  const [board, err] = await requestAPI(req);
+  if (err !== null) return null;
 
-async function saveNotePosition(id, pos_x, pos_y) {
-  const [method, url, ctx] = [
-    'PATCH',
-    `/api/notes/${id}`,
-    'saving note position'
-  ];
-
-  try {
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pos_x, pos_y })
-    });
-
-    if (!res.ok) {
-      logError(ctx, `${method} ${url} failed with status ${res.status}`);
-      showToast('Could not save note position', true);
-    }
-  } catch (err) {
-    logError(ctx, err);
-    showToast('Could not reach the server', true);
-  }
+  document.getElementById('boardTitle').textContent = board.name;
+  document.title = `${board.name} - StickyBoard`;
+  return board;
 }
 
 const getTopZ = (() => {
@@ -94,37 +65,32 @@ function makeDraggable(noteEl) {
     const pos_x = parseInt(noteEl.style.left);
     const pos_y = parseInt(noteEl.style.top);
 
-    await saveNotePosition(id, pos_x, pos_y);
+    const req = {
+      method: 'PATCH',
+      url: `/api/notes/${id}`,
+      payload: { pos_x, pos_y },
+      ctx: 'save note position'
+    };
+
+    await requestAPI(req);
   });
 }
 
 function setupNoteEditing(noteEl) {
   const textarea = noteEl.querySelector('.note-body');
+
   textarea.addEventListener('blur', async () => {
     const id = noteEl.dataset.id;
     const text = textarea.value;
 
-    const [method, url, ctx] = [
-      'PATCH',
-      `/api/notes/${id}`,
-      'saving note text'
-    ];
+    const req = {
+      method: 'PATCH',
+      url: `/api/notes/${id}`,
+      payload: { text },
+      ctx: 'save note text'
+    };
 
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-      });
-
-      if (!res.ok) {
-        logError(ctx, `${method} ${url} failed with status ${res.status}`);
-        showToast('Could not save note text', true);
-      }
-    } catch (err) {
-      logError(ctx, err);
-      showToast('Could not reach the server', true);
-    }
+    await requestAPI(req);
   });
 }
 
@@ -133,29 +99,17 @@ function setupNoteDelete(noteEl) {
 
   deleteBtn.addEventListener('click', async () => {
     const id = noteEl.dataset.id;
-    console.log(id);
-    const [method, url, ctx] = [
-      'DELETE',
-      `/api/notes/${id}`,
-      'deleting note'
-    ];
 
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    const req = {
+      method: 'DELETE',
+      url: `/api/notes/${id}`,
+      ctx: 'delete note'
+    };
 
-      if (!res.ok) {
-        logError(ctx, `${method} ${url} failed with status ${res.status}`);
-        showToast('Could not delete note', true);
-      }
+    const [_, err] = await requestAPI(req);
+    if (err !== null) return;
 
-      noteEl.remove();
-    } catch (err) {
-      logError(ctx, err);
-      showToast('Could not reach the server', true);
-    }
+    noteEl.remove();
   });
 }
 
@@ -186,29 +140,21 @@ function setupAddNoteBtn() {
   const [method, url, ctx] = ['POST', '/api/notes', 'adding note'];
 
   addNoteBtn.addEventListener('click', async () => {
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          board_id: boardId,
-          pos_x: 80 + parseInt(Math.random() * 200),
-          pos_y: 80 + parseInt(Math.random() * 200)
-        })
-      });
+    const req = {
+      method: 'POST',
+      url: `/api/notes`,
+      payload: {
+        board_id: boardId,
+        pos_x: 80 + parseInt(Math.random() * 200),
+        pos_y: 80 + parseInt(Math.random() * 200)
+      },
+      ctx: 'add note'
+    };
 
-      if (!res.ok) {
-        logError(ctx, `${method} ${url} failed with status ${res.status}`);
-        showToast('Could not add note', true);
-        return;
-      }
+    const [note, err] = await requestAPI(req);
+    if (err !== null) return;
 
-      const note = await res.json();
-      renderNote(note);
-    } catch (err) {
-      logError(ctx, err);
-      showToast('Could not reach the server', true);
-    }
+    renderNote(note);
   });
 }
 
