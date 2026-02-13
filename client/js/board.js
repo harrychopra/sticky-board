@@ -4,6 +4,8 @@ const params = new URLSearchParams(window.location.search);
 const boardId = params.get('id');
 if (!boardId) window.location.href = '/';
 
+const socket = io();
+
 const canvas = document.getElementById('boardCanvas');
 
 async function loadBoard() {
