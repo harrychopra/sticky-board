@@ -20,6 +20,8 @@ async function loadBoard() {
 
   document.getElementById('boardTitle').textContent = board.name;
   document.title = `${board.name} - StickyBoard`;
+
+  socket.emit('join:board', boardId);
   return board;
 }
 
