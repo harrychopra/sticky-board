@@ -172,6 +172,10 @@ async function init() {
 
   board.notes.forEach(note => renderNote(note));
   setupAddNoteBtn();
+
+  socket.on('note:created', note => {
+    renderNote(note);
+  });
 }
 
 init();

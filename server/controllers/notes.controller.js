@@ -7,6 +7,7 @@ export const createNote = async (req, res) => {
   if (!board) return res.status(404).json({ error: 'Board not found' });
 
   const note = await Note.create(req.body);
+  req.app.get('io').to(note.board_id).emit('note:created', note);
   res.status(201).json(note.serialize());
 };
 
