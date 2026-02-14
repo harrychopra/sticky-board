@@ -1,14 +1,13 @@
 import { requestAPI } from './api.js';
-
-const params = new URLSearchParams(window.location.search);
-const boardId = params.get('id');
-if (!boardId) window.location.href = '/';
-
+const canvas = document.getElementById('boardCanvas');
 const socket = io();
 
-const canvas = document.getElementById('boardCanvas');
+function getBoardId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id');
+}
 
-async function loadBoard() {
+async function setupBoard(boardId) {
   const req = {
     method: 'GET',
     url: `/api/boards/${boardId}`,
@@ -16,13 +15,59 @@ async function loadBoard() {
   };
 
   const [board, err] = await requestAPI(req);
-  if (err !== null) return null;
+  if (err !== null) return;
 
   document.getElementById('boardTitle').textContent = board.name;
   document.title = `${board.name} - StickyBoard`;
 
   socket.emit('join:board', boardId);
-  return board;
+
+  registerNoteAdder(boardId);
+
+  board.notes.forEach(note => renderNote(note));
+}
+
+function registerNoteAdder(boardId) {
+  const addNoteBtn = document.getElementById('addNoteBtn');
+  addNoteBtn.addEventListener('click', async () => {
+    const req = {
+      method: 'POST',
+      url: `/api/notes`,
+      payload: {
+        board_id: boardId,
+        pos_x: 80 + parseInt(Math.random() * 200),
+        pos_y: 80 + parseInt(Math.random() * 200)
+      },
+      ctx: 'add note'
+    };
+
+    const [note, err] = await requestAPI(req);
+    if (err !== null) return;
+
+    renderNote(note);
+  });
+}
+
+function renderNote({ id, pos_x, pos_y, colour, author, text }) {
+  const noteEl = document.createElement('div');
+  noteEl.className = 'note';
+  noteEl.dataset.id = id;
+  noteEl.style.left = pos_x + 'px';
+  noteEl.style.top = pos_y + 'px';
+  noteEl.style.backgroundColor = colour;
+
+  noteEl.innerHTML = `
+    <div class="note-header">
+      <div class="note-author">${author}</div>
+      <button class="note-delete">×</button>
+    </div>
+    <textarea class="note-body" placeholder="Type something...">${text}</textarea>
+  `;
+
+  registerNoteMover(noteEl);
+  registerNoteSaver(noteEl);
+  registerNoteRemover(noteEl);
+  canvas.appendChild(noteEl);
 }
 
 const getTopZ = (() => {
@@ -30,7 +75,7 @@ const getTopZ = (() => {
   return (() => ++topZ);
 })();
 
-function makeDraggable(noteEl) {
+function registerNoteMover(noteEl) {
   let dragging = false;
   let startX, startY, startLeft, startTop;
 
@@ -84,7 +129,7 @@ function makeDraggable(noteEl) {
   });
 }
 
-function setupNoteEditing(noteEl) {
+function registerNoteSaver(noteEl) {
   const textarea = noteEl.querySelector('.note-body');
 
   textarea.addEventListener('blur', async () => {
@@ -102,7 +147,7 @@ function setupNoteEditing(noteEl) {
   });
 }
 
-function setupNoteDelete(noteEl) {
+function registerNoteRemover(noteEl) {
   const deleteBtn = noteEl.querySelector('.note-delete');
 
   deleteBtn.addEventListener('click', async () => {
@@ -121,61 +166,19 @@ function setupNoteDelete(noteEl) {
   });
 }
 
-function renderNote({ id, pos_x, pos_y, colour, author, text }) {
-  const noteEl = document.createElement('div');
-  noteEl.className = 'note';
-  noteEl.dataset.id = id;
-  noteEl.style.left = pos_x + 'px';
-  noteEl.style.top = pos_y + 'px';
-  noteEl.style.backgroundColor = colour;
-
-  noteEl.innerHTML = `
-    <div class="note-header">
-      <div class="note-author">${author}</div>
-      <button class="note-delete">×</button>
-    </div>
-    <textarea class="note-body" placeholder="Type something...">${text}</textarea>
-  `;
-
-  makeDraggable(noteEl);
-  setupNoteEditing(noteEl);
-  setupNoteDelete(noteEl);
-  canvas.appendChild(noteEl);
-}
-
-function setupAddNoteBtn() {
-  const addNoteBtn = document.getElementById('addNoteBtn');
-  const [method, url, ctx] = ['POST', '/api/notes', 'adding note'];
-
-  addNoteBtn.addEventListener('click', async () => {
-    const req = {
-      method: 'POST',
-      url: `/api/notes`,
-      payload: {
-        board_id: boardId,
-        pos_x: 80 + parseInt(Math.random() * 200),
-        pos_y: 80 + parseInt(Math.random() * 200)
-      },
-      ctx: 'add note'
-    };
-
-    const [note, err] = await requestAPI(req);
-    if (err !== null) return;
-
+function initSocketListeners() {
+  socket.on('note:created', note => {
     renderNote(note);
   });
 }
 
 async function init() {
-  const board = await loadBoard();
-  if (!board) return;
+  const boardId = getBoardId();
+  if (!boardId) window.location.href = '/';
 
-  board.notes.forEach(note => renderNote(note));
-  setupAddNoteBtn();
+  await setupBoard(boardId);
 
-  socket.on('note:created', note => {
-    renderNote(note);
-  });
+  initSocketListeners();
 }
 
 init();
