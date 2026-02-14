@@ -92,14 +92,17 @@ class Note {
       }
     }
 
-    const placeholders = [];
+    const setClauses = [];
     const values = Object.entries(fieldsToUpdate).map(([key, val], i) => {
-      placeholders.push(`${key} = $${i + 1}`);
+      setClauses.push(`${key} = $${i + 1}`);
       return val;
     });
 
-    const query = `update notes set ${placeholders.join(', ')} where id = $${
-      placeholders.length + 1
+    const setClauseQuery = setClauses.join(', ')
+      + ', updated_at = NOW()';
+
+    const query = `update notes set ${setClauseQuery} where id = $${
+      setClauses.length + 1
     } returning *`;
 
     values.push(this.id);
