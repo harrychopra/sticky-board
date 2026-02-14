@@ -22,5 +22,6 @@ export const updateNote = async (req, res) => {
   if (!note) return res.status(404).json({ error: 'Note not found' });
 
   const updated = await note.update(req.body);
+  req.app.get('io').to(updated.board_id).emit('note:updated', updated);
   res.json(updated.serialize());
 };
