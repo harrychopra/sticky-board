@@ -67,11 +67,8 @@ class Note {
     return rows.length === 1 ? new Note(rows[0]) : null;
   }
 
-  static async deleteById(id) {
-    const { rowCount } = await db.query(`DELETE FROM notes WHERE id = $1`, [
-      id
-    ]);
-    return rowCount > 0;
+  async delete() {
+    await db.query(`DELETE FROM notes WHERE id = $1`, [this.id]);
   }
 
   async update(fields) {

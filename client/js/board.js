@@ -183,6 +183,10 @@ function initSocketListeners() {
       textarea.value = note.text;
     }
   });
+
+  socket.on('note:deleted', ({ id: noteId }) => {
+    canvas.querySelector(`[data-id="${noteId}"]`)?.remove();
+  });
 }
 
 async function init() {
