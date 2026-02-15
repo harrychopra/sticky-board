@@ -34,9 +34,9 @@ function registerNoteAdder(boardId) {
       method: 'POST',
       url: `/api/notes`,
       payload: {
-        board_id: boardId,
-        pos_x: 80 + parseInt(Math.random() * 200),
-        pos_y: 80 + parseInt(Math.random() * 200)
+        boardId: boardId,
+        posX: 80 + parseInt(Math.random() * 200),
+        posY: 80 + parseInt(Math.random() * 200)
       },
       ctx: 'add note'
     };
@@ -48,12 +48,12 @@ function registerNoteAdder(boardId) {
   });
 }
 
-function renderNote({ id, pos_x, pos_y, colour, author, text }) {
+function renderNote({ id, posX, posY, colour, author, text }) {
   const noteEl = document.createElement('div');
   noteEl.className = 'note';
   noteEl.dataset.id = id;
-  noteEl.style.left = pos_x + 'px';
-  noteEl.style.top = pos_y + 'px';
+  noteEl.style.left = posX + 'px';
+  noteEl.style.top = posY + 'px';
   noteEl.style.backgroundColor = colour;
 
   noteEl.innerHTML = `
@@ -115,13 +115,13 @@ function registerNoteMover(noteEl) {
     if (startX === clientX && startY === clientY) return;
 
     const id = noteEl.dataset.id;
-    const pos_x = parseInt(noteEl.style.left);
-    const pos_y = parseInt(noteEl.style.top);
+    const posX = parseInt(noteEl.style.left);
+    const posY = parseInt(noteEl.style.top);
 
     const req = {
       method: 'PATCH',
       url: `/api/notes/${id}`,
-      payload: { pos_x, pos_y },
+      payload: { posX, posY },
       ctx: 'save note position'
     };
 
@@ -175,8 +175,8 @@ function initSocketListeners() {
     const noteEl = canvas.querySelector(`[data-id="${note.id}"]`);
     if (!noteEl) return;
 
-    noteEl.style.left = note.pos_x + 'px';
-    noteEl.style.top = note.pos_y + 'px';
+    noteEl.style.left = note.posX + 'px';
+    noteEl.style.top = note.posY + 'px';
 
     const textarea = noteEl.querySelector('.note-body');
     if (document.activeElement !== textarea) {

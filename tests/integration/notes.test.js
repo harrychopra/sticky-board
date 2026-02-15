@@ -21,7 +21,7 @@ describe('Notes API', () => {
     const res = await request(app)
       .post('/api/notes')
       .send({
-        board_id: boardId,
+        boardId: boardId,
         text: 'Hello world',
         colour: '#FFEB3B',
         author: 'Harry',
@@ -37,12 +37,12 @@ describe('Notes API', () => {
   test('PATCH /api/notes/:id - updates note', async () => {
     const res = await request(app).patch(`/api/notes/${noteId}`).send({
       text: 'Updated text',
-      pos_x: 250,
-      pos_y: 300
+      posX: 250,
+      posY: 300
     });
     expect(res.status).toBe(200);
     expect(res.body.text).toBe('Updated text');
-    expect(res.body.pos_x).toBe(250);
+    expect(res.body.posX).toBe(250);
   });
 
   test('DELETE /api/notes/:id - deletes note', async () => {
