@@ -170,12 +170,16 @@ function initSocketListeners() {
   socket.on('note:created', note => {
     renderNote(note);
   });
+
   socket.on('note:updated', note => {
     const noteEl = canvas.querySelector(`[data-id="${note.id}"]`);
     if (!noteEl) return;
 
     noteEl.style.left = note.pos_x + 'px';
     noteEl.style.top = note.pos_y + 'px';
+
+    const textarea = noteEl.querySelector('.note-body');
+    textarea.value = note.text;
   });
 }
 
