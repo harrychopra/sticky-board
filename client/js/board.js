@@ -179,7 +179,9 @@ function initSocketListeners() {
     noteEl.style.top = note.pos_y + 'px';
 
     const textarea = noteEl.querySelector('.note-body');
-    textarea.value = note.text;
+    if (document.activeElement !== textarea) {
+      textarea.value = note.text;
+    }
   });
 }
 
