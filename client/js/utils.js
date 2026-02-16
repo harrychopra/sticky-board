@@ -15,3 +15,39 @@ export function showToast(msg, isError = false) {
 export function logError(ctx, err) {
   console.error(`[${ctx}]`, err);
 }
+
+const adjectives = [
+  'quick',
+  'lazy',
+  'happy',
+  'clever',
+  'brave',
+  'calm',
+  'eager',
+  'fierce',
+  'gentle',
+  'jolly'
+];
+
+const animals = [
+  'panda',
+  'falcon',
+  'otter',
+  'badger',
+  'fox',
+  'wolf',
+  'lynx',
+  'crane',
+  'bison',
+  'gecko'
+];
+
+export function generateUsername() {
+  const random = upto => Math.floor(Math.random() * upto);
+
+  const adj = adjectives[random(adjectives.length)];
+  const animal = animals[random(animals.length)];
+  const num = random(100);
+
+  return `${adj}-${animal}-${num}`;
+}

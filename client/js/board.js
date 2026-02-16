@@ -1,17 +1,23 @@
 import { requestAPI } from './api.js';
-import { showToast } from './utils.js';
-const canvas = document.getElementById('boardCanvas');
-const socket = io();
+import { generateUsername, showToast } from './utils.js';
 
-function getBoardId() {
+const state = { boardId: null, username: null };
+const socket = io();
+const canvas = document.getElementById('boardCanvas');
+
+function initState() {
   const params = new URLSearchParams(window.location.search);
-  return params.get('id');
+  state.boardId = params.get('id');
+  if (!state.boardId) window.location.href = '/';
+
+  state.username = localStorage.getItem('username') || generateUsername();
+  localStorage.setItem('username', state.username);
 }
 
-async function setupBoard(boardId) {
+async function setupBoard() {
   const req = {
     method: 'GET',
-    url: `/api/boards/${boardId}`,
+    url: `/api/boards/${state.boardId}`,
     ctx: 'load board'
   };
 
@@ -21,21 +27,21 @@ async function setupBoard(boardId) {
   document.getElementById('boardTitle').textContent = board.name;
   document.title = `${board.name} - StickyBoard`;
 
-  socket.emit('join:board', { boardId, username: 'Guest' });
+  socket.emit('join:board', state);
 
-  registerNoteAdder(boardId);
+  registerNoteAdder();
 
   board.notes.forEach(note => renderNote(note));
 }
 
-function registerNoteAdder(boardId) {
+function registerNoteAdder() {
   const addNoteBtn = document.getElementById('addNoteBtn');
   addNoteBtn.addEventListener('click', async () => {
     const req = {
       method: 'POST',
       url: `/api/notes`,
       payload: {
-        boardId: boardId,
+        boardId: state.boardId,
         posX: 80 + parseInt(Math.random() * 200),
         posY: 80 + parseInt(Math.random() * 200)
       },
@@ -207,11 +213,8 @@ function registerSocketListeners() {
 }
 
 async function init() {
-  const boardId = getBoardId();
-  if (!boardId) window.location.href = '/';
-
-  await setupBoard(boardId);
-
+  initState();
+  await setupBoard();
   registerSocketListeners();
 }
 
