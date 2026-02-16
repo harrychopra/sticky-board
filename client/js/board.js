@@ -168,6 +168,14 @@ function registerNoteRemover(noteEl) {
 }
 
 function registerSocketListeners() {
+  socket.on('userPresence:update', ({ usernames }) => {
+    const el = document.getElementById('userPresence');
+    el.innerHTML = usernames.map(username => `
+        <div class='avatar' title="${username}">
+          ${username[0].toUpperCase()}
+        </div>`).join('');
+  });
+
   socket.on('user:joined', ({ username }) => {
     showToast(`${username} joined the board`);
   });

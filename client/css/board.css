@@ -5,7 +5,7 @@
 
 .toolbar {
   height: 50px;
-  border-bottom: 1px solid darkslategray;
+  border-bottom: 1px solid #64748b;
   display: flex;
   align-items: center;
   padding: 0 1.5rem;
@@ -25,6 +25,37 @@
 
 .add-note-btn {
   padding: 0.25rem 0.5rem;
+}
+
+#userPresence {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+#userPresence .avatar {
+  cursor: default;
+  margin-left: -0.5rem;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  color: white;
+  background-color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: auto auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#userPresence .avatar:nth-child(even) {
+  background: #475569;
+}
+
+#userPresence .avatar:hover {
+  transform: translateY(-2px);
+  z-index: 10;
 }
 
 .board-canvas {
