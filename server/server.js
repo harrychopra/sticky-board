@@ -1,7 +1,7 @@
 import http from 'http';
 import { Server } from 'socket.io';
 import app from './app.js';
-import { initSocketHandlers } from './socket.js';
+import { registerSocketHandlers } from './socket.js';
 
 const { PORT = 9090 } = process.env;
 
@@ -11,7 +11,7 @@ const io = new Server(server, {
   cors: { origin: '*' }
 });
 
-initSocketHandlers(io);
+registerSocketHandlers(io);
 
 app.set('io', io);
 

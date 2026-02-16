@@ -1,4 +1,5 @@
 import { requestAPI } from './api.js';
+import { showToast } from './utils.js';
 const canvas = document.getElementById('boardCanvas');
 const socket = io();
 
@@ -20,7 +21,7 @@ async function setupBoard(boardId) {
   document.getElementById('boardTitle').textContent = board.name;
   document.title = `${board.name} - StickyBoard`;
 
-  socket.emit('join:board', boardId);
+  socket.emit('join:board', { boardId, username: 'Guest' });
 
   registerNoteAdder(boardId);
 
@@ -166,7 +167,15 @@ function registerNoteRemover(noteEl) {
   });
 }
 
-function initSocketListeners() {
+function registerSocketListeners() {
+  socket.on('user:joined', ({ username }) => {
+    showToast(`${username} joined the board`);
+  });
+
+  socket.on('user:left', ({ username }) => {
+    showToast(`${username} left the board`);
+  });
+
   socket.on('note:created', note => {
     renderNote(note);
   });
@@ -195,7 +204,7 @@ async function init() {
 
   await setupBoard(boardId);
 
-  initSocketListeners();
+  registerSocketListeners();
 }
 
 init();

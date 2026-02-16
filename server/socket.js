@@ -1,14 +1,18 @@
-export function initSocketHandlers(io) {
+export function registerSocketHandlers(io) {
   io.on('connection', socket => {
-    console.log('client connected:', socket.id);
-
-    socket.on('join:board', boardId => {
+    socket.on('join:board', ({ boardId, username }) => {
       socket.join(boardId);
-      console.log(`${socket.id} joined ${boardId}`);
+      socket.data.boardId = boardId;
+      socket.data.username = username;
+
+      socket.to(boardId).emit('user:joined', { username });
     });
 
     socket.on('disconnect', () => {
-      console.log('client disconnected', socket.id);
+      const { boardId, username } = socket.data;
+      if (boardId && username) {
+        socket.to(boardId).emit('user:left', { username });
+      }
     });
   });
 }
