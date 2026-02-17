@@ -7,9 +7,10 @@ class Note {
     this.id = row.id;
     this.boardId = row.board_id;
     this.text = row.text;
-    this.colour = row.colour;
+    this.color = row.color;
     this.posX = row.pos_x;
     this.posY = row.pos_y;
+    this.zIndex = row.z_index;
     this.width = row.width;
     this.height = row.height;
     this.author = row.author;
@@ -34,9 +35,10 @@ class Note {
     {
       boardId,
       text = '',
-      colour = '#FFEB3B',
+      color = '#FFEB3B',
       posX = 100,
       posY = 100,
+      zIndex = 0,
       width = 200,
       height = 200,
       author = 'Anonymous',
@@ -47,18 +49,19 @@ class Note {
     const { rows } = await db.query(
       `--sql
       insert into notes (
-        id, board_id, text, colour, pos_x, pos_y, width, height, author, tags
+        id, board_id, text, color, pos_x, pos_y, z_index, width, height, author, tags
       ) values (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
       ) returning *
     `,
       [
         id,
         boardId,
         text,
-        colour,
+        color,
         posX,
         posY,
+        zIndex,
         width,
         height,
         author,
@@ -74,6 +77,7 @@ class Note {
       color: 'color',
       posX: 'pos_x',
       posY: 'pos_y',
+      zIndex: 'z_index',
       width: 'width',
       height: 'height',
       tags: 'tags'

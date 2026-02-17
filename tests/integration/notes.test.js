@@ -23,7 +23,7 @@ describe('Notes API', () => {
       .send({
         boardId: boardId,
         text: 'Hello world',
-        colour: '#FFEB3B',
+        color: '#FFEB3B',
         author: 'Harry',
         tags: ['#idea']
       });

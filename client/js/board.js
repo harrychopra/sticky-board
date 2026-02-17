@@ -67,7 +67,7 @@ function registerNoteAdder() {
       url: `/api/notes`,
       payload: {
         boardId: state.boardId,
-        colour: state.selectedColor,
+        color: state.selectedColor,
         posX: 80 + parseInt(Math.random() * 200),
         posY: 80 + parseInt(Math.random() * 200)
       },
@@ -81,13 +81,13 @@ function registerNoteAdder() {
   });
 }
 
-function renderNote({ id, posX, posY, colour, author, text }) {
+function renderNote({ id, posX, posY, color, author, text }) {
   const noteEl = document.createElement('div');
   noteEl.className = 'note';
   noteEl.dataset.id = id;
   noteEl.style.left = posX + 'px';
   noteEl.style.top = posY + 'px';
-  noteEl.style.backgroundColor = colour;
+  noteEl.style.backgroundColor = color;
 
   noteEl.innerHTML = `
     <div class="note-header">
