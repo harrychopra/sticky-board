@@ -123,3 +123,26 @@
 .note-body:focus {
   outline: none;
 }
+
+#colorPicker {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.color-tile {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 100ms ease;
+}
+
+.color-tile:hover {
+  transform: scale(1.2);
+}
+
+.color-tile.active {
+  border-color: #444;
+}

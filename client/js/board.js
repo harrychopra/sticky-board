@@ -1,7 +1,7 @@
 import { requestAPI } from './api.js';
 import { generateUsername, showToast } from './utils.js';
 
-const state = { boardId: null, username: null };
+const state = { boardId: null, username: null, selectedColor: null };
 const socket = io();
 const canvas = document.getElementById('boardCanvas');
 
@@ -12,6 +12,30 @@ function initState() {
 
   state.username = localStorage.getItem('username') || generateUsername();
   localStorage.setItem('username', state.username);
+
+  state.selectedColor = localStorage.getItem('selectedColor') || '#FFEB3B';
+}
+
+function setupColorPicker() {
+  document.querySelectorAll('.color-tile').forEach(tile =>
+    tile.dataset.color === state.selectedColor
+      ? tile.classList.add('active')
+      : tile.classList.remove('active')
+  );
+
+  const picker = document.getElementById('colorPicker');
+  picker.addEventListener('click', e => {
+    const colorTile = e.target.closest('.color-tile');
+    if (!colorTile) return;
+
+    document.querySelectorAll('.color-tile').forEach(tile =>
+      tile.classList.remove('active')
+    );
+
+    colorTile.classList.add('active');
+    state.selectedColor = colorTile.dataset.color;
+    localStorage.setItem('selectedColor', state.selectedColor);
+  });
 }
 
 async function setupBoard() {
@@ -30,6 +54,7 @@ async function setupBoard() {
   socket.emit('join:board', state);
 
   registerNoteAdder();
+  setupColorPicker();
 
   board.notes.forEach(note => renderNote(note));
 }
@@ -42,6 +67,7 @@ function registerNoteAdder() {
       url: `/api/notes`,
       payload: {
         boardId: state.boardId,
+        colour: state.selectedColor,
         posX: 80 + parseInt(Math.random() * 200),
         posY: 80 + parseInt(Math.random() * 200)
       },
