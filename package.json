@@ -28,6 +28,7 @@
     "db:reset:test": "NODE_ENV=test node ./server/db/scripts/resetDB.js",
     "db:reset:prod": "NODE_ENV=production node ./server/db/scripts/resetDB.js",
     "dev": "nodemon ./server/server.js",
-    "test": "NODE_OPTIONS='--no-warnings --experimental-vm-modules' jest"
+    "test": "NODE_OPTIONS='--no-warnings --experimental-vm-modules' jest",
+    "start": "NODE_ENV=production node ./server/server.js"
   }
 }
