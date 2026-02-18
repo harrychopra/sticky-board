@@ -4,6 +4,7 @@ import { generateUsername, showToast } from './utils.js';
 const state = { boardId: null, username: null, selectedColor: null };
 const socket = io();
 const canvas = document.getElementById('boardCanvas');
+let topZ = 0;
 
 function initState() {
   const params = new URLSearchParams(window.location.search);
@@ -38,16 +39,22 @@ function setupColorPicker() {
   });
 }
 
-async function setupBoard() {
+async function getBoard() {
   const req = {
     method: 'GET',
     url: `/api/boards/${state.boardId}`,
-    ctx: 'load board'
+    ctx: 'get board'
   };
 
   const [board, err] = await requestAPI(req);
-  if (err !== null) return;
+  if (err !== null) {
+    return;
+  }
 
+  return board;
+}
+
+async function setupBoard(board) {
   document.getElementById('boardTitle').textContent = board.name;
   document.title = `${board.name} - StickyBoard`;
 
@@ -69,7 +76,8 @@ function registerNoteAdder() {
         boardId: state.boardId,
         color: state.selectedColor,
         posX: 80 + parseInt(Math.random() * 200),
-        posY: 80 + parseInt(Math.random() * 200)
+        posY: 80 + parseInt(Math.random() * 200),
+        zIndex: ++topZ
       },
       ctx: 'add note'
     };
@@ -81,12 +89,14 @@ function registerNoteAdder() {
   });
 }
 
-function renderNote({ id, posX, posY, color, author, text }) {
+function renderNote({ id, posX, posY, zIndex, color, author, text }) {
   const noteEl = document.createElement('div');
   noteEl.className = 'note';
   noteEl.dataset.id = id;
   noteEl.style.left = posX + 'px';
   noteEl.style.top = posY + 'px';
+  noteEl.style.zIndex = zIndex;
+  if (zIndex > topZ) topZ = zIndex;
   noteEl.style.backgroundColor = color;
 
   noteEl.innerHTML = `
@@ -103,10 +113,20 @@ function renderNote({ id, posX, posY, color, author, text }) {
   canvas.appendChild(noteEl);
 }
 
-const getTopZ = (() => {
-  let topZ = 0;
-  return (() => ++topZ);
-})();
+async function updateZIndex(noteEl) {
+  const id = noteEl.dataset.id;
+  const zIndex = ++topZ;
+  noteEl.style.zIndex = zIndex;
+
+  const req = {
+    method: 'PATCH',
+    url: `/api/notes/${id}`,
+    payload: { zIndex },
+    ctx: 'save note zIndex'
+  };
+
+  await requestAPI(req);
+}
 
 function registerNoteMover(noteEl) {
   let dragging = false;
@@ -114,7 +134,7 @@ function registerNoteMover(noteEl) {
 
   noteEl.addEventListener('mousedown', e => {
     // bring the note to foreground
-    noteEl.style.zIndex = getTopZ();
+    updateZIndex(noteEl);
 
     // for dragging, ignore any click inside the text area
     const tag = e.target.tagName;
@@ -226,6 +246,7 @@ function registerSocketListeners() {
 
     noteEl.style.left = note.posX + 'px';
     noteEl.style.top = note.posY + 'px';
+    noteEl.style.zIndex = note.zIndex;
 
     const textarea = noteEl.querySelector('.note-body');
     if (document.activeElement !== textarea) {
@@ -240,7 +261,13 @@ function registerSocketListeners() {
 
 async function init() {
   initState();
-  await setupBoard();
+  const board = await getBoard();
+  if (!board) {
+    window.location.href = '/';
+    return;
+  }
+
+  setupBoard(board);
   registerSocketListeners();
 }
 
