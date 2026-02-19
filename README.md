@@ -1,17 +1,22 @@
 # StickyBoard
 
-A real-time collaborative sticky note board. Create a board, share the link,
-and anyone with the link can join and add notes. No account needed.
+A real-time multiplayer sticky note board, inspired by tools like Excalidraw. Create a board, share the link, and anyone with it can join and collaborate instantly. No account needed.
+
+Every action: adding, moving, editing or deleting a note, syncs live across all connected users via WebSockets. You can see who else is on the board in real time via presence avatars in the toolbar.
 
 Built as a portfolio project to demonstrate full stack JavaScript skills.
 
 ## Live demo
 
+[Click here](https://sticky-board-production.up.railway.app)
+
+Running on free tier. The server may be slow or unresponsive at times depending on  credits. If the board doesn't load, try refreshing after a few seconds.
+
 ## What it does
 
 - Create a board and get a shareable URL
 - Add, move, edit and delete sticky notes
-- Changes sync in real time across all connected users
+- Changes sync in **real-time** across all connected users
 - See who else is on the board via presence avatars
 - Notes and positions are saved to the database
 - Pick note colors from the toolbar
