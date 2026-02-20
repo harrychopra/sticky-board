@@ -122,7 +122,7 @@ async function updateZIndex(noteEl) {
     method: 'PATCH',
     url: `/api/notes/${id}`,
     payload: { zIndex },
-    ctx: 'save note zIndex'
+    ctx: 'save note stack order'
   };
 
   await requestAPI(req);
