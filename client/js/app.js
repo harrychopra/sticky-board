@@ -44,7 +44,7 @@ function renderRecentBoards() {
     return;
   }
 
-  container.style.display = 'block';
+  container.style.display = 'flex';
   container.innerHTML = `
     <h2 class="heading">Recent boards</h2>
     <ul id="recentList">
